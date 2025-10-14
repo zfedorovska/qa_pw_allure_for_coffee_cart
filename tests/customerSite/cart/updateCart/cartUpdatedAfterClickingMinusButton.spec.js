@@ -1,35 +1,42 @@
 import { test } from '../../../_fixtures/fixtures';
+import { getAllure } from '../../../_fixtures/allureHelper';
 import { COFFEE_NAMES } from '../../../../src/constants';
-import * as allure from 'allure-js-commons';
 
-test('Cart updated correctly after clicking minus for drinks', async ({
-  cartPage,
-  menuPage,
-}) => {
-  allure.epic(`'CoffeeCart' Customer site`);
-  allure.feature('Cart');
-  allure.story('The user should be able remove coffee cup from the cart');
-  allure.parentSuite(`Customer site`);
-  allure.suite('Cart');
-  allure.subSuite('Cart update with removal');
-  await allure.severity(`critical`);
+test.describe('Cart > Update with removal', () => {
+  // Shared Allure labels for this file/suite
+  test.beforeEach(async ({}, testInfo) => {
+    const a = getAllure(testInfo);
+    a.parentSuite('Customer site');
+    a.suite('Cart');
+    a.subSuite('Cart update with removal');
+    a.epic('CoffeeCart Customer site');
+    a.feature('Cart');
+    a.severity('critical');
+  });
 
-  await menuPage.open();
-  await menuPage.clickCoffeeCup(COFFEE_NAMES.cappuccino);
-  await menuPage.clickCoffeeCup(COFFEE_NAMES.espresso);
+  test(
+    'Cart updated correctly after clicking minus for drinks',
+    async ({ cartPage, menuPage }, testInfo) => {
+      const a = getAllure(testInfo);
+      a.story('User can remove a coffee cup from the cart');
+      a.parameter('drinks', `${COFFEE_NAMES.espresso}, ${COFFEE_NAMES.cappuccino}`);
 
-  await menuPage.clickCartLink();
-  await cartPage.waitForLoading();
+      await menuPage.open();
+      await menuPage.clickCoffeeCup(COFFEE_NAMES.cappuccino);
+      await menuPage.clickCoffeeCup(COFFEE_NAMES.espresso);
 
-  await cartPage.assertCoffeeItemIsVisible(COFFEE_NAMES.espresso);
+      await menuPage.clickCartLink();
+      await cartPage.waitForLoading();
 
-  await cartPage.clickCoffeeListItemRemoveOneButton(COFFEE_NAMES.espresso);
+      await cartPage.assertCoffeeItemIsVisible(COFFEE_NAMES.espresso);
+      await cartPage.clickCoffeeListItemRemoveOneButton(COFFEE_NAMES.espresso);
+      await cartPage.assertCoffeeItemIsHidden(COFFEE_NAMES.espresso);
 
-  await cartPage.assertCoffeeItemIsHidden(COFFEE_NAMES.espresso);
-  await cartPage.assertCoffeeItemIsVisible(COFFEE_NAMES.cappuccino);
+      await cartPage.assertCoffeeItemIsVisible(COFFEE_NAMES.cappuccino);
+      await cartPage.clickCoffeeListItemRemoveOneButton(COFFEE_NAMES.cappuccino);
+      await cartPage.assertCoffeeItemIsHidden(COFFEE_NAMES.cappuccino);
 
-  await cartPage.clickCoffeeListItemRemoveOneButton(COFFEE_NAMES.cappuccino);
-
-  await cartPage.assertCoffeeItemIsHidden(COFFEE_NAMES.cappuccino);
-  await cartPage.assertNoCoffeeMessageIsVisible();
+      await cartPage.assertNoCoffeeMessageIsVisible();
+    }
+  );
 });

@@ -4,13 +4,12 @@
   "description": "",
   "main": "index.js",
   "dependencies": {
-    "@faker-js/faker": "^9",
-    "playwright-core": "^1"
+    "@faker-js/faker": "^9"
   },
   "devDependencies": {
     "@eslint/js": "^9.19.0",
-    "@playwright/test": "^1",
-    "allure-playwright": "^3.3.3",
+    "@playwright/test": "1.44.1",
+    "allure-playwright": "2.14.0",
     "eslint": "^9.19.0",
     "eslint-config-prettier": "^10.0.1",
     "eslint-plugin-playwright": "^2.2.0",

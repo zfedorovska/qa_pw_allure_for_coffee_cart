@@ -1,45 +1,46 @@
 import { test } from '../../../_fixtures/fixtures';
-import {
-  unitPriceFormatStr,
-  priceFormatStr,
-} from '../../../../src/common/helpers/priceFormatters';
+import { getAllure } from '../../../_fixtures/allureHelper';
+import { unitPriceFormatStr, priceFormatStr } from '../../../../src/common/helpers/priceFormatters';
 import { COFFEE_NAMES, COFFEE_PRICES } from '../../../../src/constants';
-import * as allure from 'allure-js-commons';
 
-let testParameters = [];
+// Build param set
+const testParameters = Object.entries(COFFEE_NAMES).map(([key, name]) => ({
+  coffee: name,
+  price: COFFEE_PRICES[key],
+}));
 
-for (const [key, value] of Object.entries(COFFEE_NAMES)) {
-  testParameters.push({ coffee: value, price: COFFEE_PRICES[key] });
-}
+test.describe('Cart > Add to cart', () => {
+  // Shared Allure labels
+  test.beforeEach(async ({}, testInfo) => {
+    const a = getAllure(testInfo);
+    a.parentSuite('Customer site');
+    a.suite('Cart');
+    a.subSuite('Add to cart');
+    a.epic('CoffeeCart Customer site');
+    a.feature('Cart');
+    a.severity('blocker');
+  });
 
-testParameters.forEach(({ coffee, price }) => {
-  test(`The ${coffee} correctly added to the Cart`, async ({
-    menuPage,
-    cartPage,
-  }) => {
+  testParameters.forEach(({ coffee, price }) => {
+    test(`The ${coffee} is correctly added to the Cart`, async ({ menuPage, cartPage }, testInfo) => {
+      // ✅ Use helper here too
+      const a = getAllure(testInfo);
+      a.story('User can add a coffee cup to the cart');
+      a.parameter('coffee', coffee);
+      a.parameter('price', String(price));
 
-    allure.epic(`'CoffeeCart' Customer site`);
-    allure.feature('Cart');
-    allure.story('The user should be able to add coffee cup to the cart');
-    allure.parentSuite(`Customer site`);
-    allure.suite('Cart');
-    allure.subSuite('Add to cart');
-    await allure.severity(`blocker`);
+      const totalPriceStr = priceFormatStr(price);
+      const unitPriceStr = unitPriceFormatStr(price, 1);
 
-    const totalPriceStr = priceFormatStr(price);
-    const unitPriceStr = unitPriceFormatStr(price, 1);
+      await menuPage.open();
+      await menuPage.clickCoffeeCup(coffee);
 
-    await menuPage.open();
-    await menuPage.clickCoffeeCup(coffee);
+      await menuPage.clickCartLink();
+      await cartPage.waitForLoading();
 
-    await menuPage.clickCartLink();
-    await cartPage.waitForLoading();
-
-    await cartPage.assertCoffeeNameContainsCorrectText(coffee);
-    await cartPage.assertCoffeeUnitContainsCorrectText(coffee, unitPriceStr);
-    await cartPage.assertCoffeeTotalCostContainsCorrectText(
-      coffee,
-      totalPriceStr,
-    );
+      await cartPage.assertCoffeeNameContainsCorrectText(coffee);
+      await cartPage.assertCoffeeUnitContainsCorrectText(coffee, unitPriceStr);
+      await cartPage.assertCoffeeTotalCostContainsCorrectText(coffee, totalPriceStr);
+    });
   });
 });
