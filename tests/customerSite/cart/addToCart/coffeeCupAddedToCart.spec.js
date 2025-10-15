@@ -1,5 +1,6 @@
 import { test } from '../../../_fixtures/fixtures';
-import { getAllure } from '../../../_fixtures/allureHelper';
+import { allure } from 'allure-playwright';
+
 import { unitPriceFormatStr, priceFormatStr } from '../../../../src/common/helpers/priceFormatters';
 import { COFFEE_NAMES, COFFEE_PRICES } from '../../../../src/constants';
 
@@ -11,23 +12,20 @@ const testParameters = Object.entries(COFFEE_NAMES).map(([key, name]) => ({
 
 test.describe('Cart > Add to cart', () => {
   // Shared Allure labels
-  test.beforeEach(async ({}, testInfo) => {
-    const a = getAllure(testInfo);
-    a.parentSuite('Customer site');
-    a.suite('Cart');
-    a.subSuite('Add to cart');
-    a.epic('CoffeeCart Customer site');
-    a.feature('Cart');
-    a.severity('blocker');
+  test.beforeEach(async () => {
+    await allure.parentSuite('Customer site');
+    await allure.suite('Cart');
+    await allure.subSuite('Add to cart');
+    await allure.epic('CoffeeCart Customer site');
+    await allure.feature('Cart');
+    await allure.severity('blocker');
   });
 
   testParameters.forEach(({ coffee, price }) => {
-    test(`The ${coffee} is correctly added to the Cart`, async ({ menuPage, cartPage }, testInfo) => {
-      // ✅ Use helper here too
-      const a = getAllure(testInfo);
-      a.story('User can add a coffee cup to the cart');
-      a.parameter('coffee', coffee);
-      a.parameter('price', String(price));
+    test(`The ${coffee} is correctly added to the Cart`, async ({ menuPage, cartPage }) => {
+      await allure.story('User can add a coffee cup to the cart');
+      await allure.parameter('coffee', coffee);
+      await allure.parameter('price', String(price));
 
       const totalPriceStr = priceFormatStr(price);
       const unitPriceStr = unitPriceFormatStr(price, 1);

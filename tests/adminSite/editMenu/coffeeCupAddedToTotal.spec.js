@@ -1,21 +1,19 @@
-// tests/adminSite/editMenu/coffeeCupAddedToTotal.spec.js
 import { test } from '../../_fixtures/fixtures';
-import { getAllure } from '../../_fixtures/allureHelper';
+import { allure } from 'allure-playwright';
+
 
 test.describe('Admin edit menu', () => {
-  test.beforeEach(async ({}, testInfo) => {
-    const a = getAllure(testInfo);
-    a.parentSuite('Admin site');
-    a.suite('Admin edit menu');
-    a.subSuite('Add to menu');
-    a.epic('CoffeeCart Admin site');
-    a.feature('Edit menu');
-    a.severity('critical');
+  test.beforeEach(async () => {
+    await allure.parentSuite('Admin site');
+    await allure.suite('Admin edit menu');
+    await allure.subSuite('Add to menu');
+    await allure.epic('CoffeeCart Admin site');
+    await allure.feature('Edit menu');
+    await allure.severity('critical');
   });
 
-  test('New coffee can be added to the Menu', async ({ page }, testInfo) => {
-    const a = getAllure(testInfo);
-    a.story('User can add new coffee to the menu');
+  test('New coffee can be added to the Menu', async ({ page }) => {
+    await allure.story('User can add new coffee to the menu');
 
     await page.goto('/admin');
     // …your steps…
